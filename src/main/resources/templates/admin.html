@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Security</title>
+</head>
+<body>
+<h2>Admin</h2>
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
+<h1>Welcome to admin page!</h1>
+<br>
+<h2>All users:</h2>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Last_Name</th>
+        <th>Email</th>
+        <th>Operations</th>
+    </tr>
+
+    <tr th:each="user : ${listOfUsers}">
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.lastName}"></td>
+        <td th:text="${user.email}"></td>
+    </tr>
+
+    <form method = "GET" th:action="@{/admin/update/{id}(id=${user.id})}">
+        <input type ="submit" value = "Update"/>
+    </form>
+
+
+    <form method = "DELETE" th:action="@{/admin/{id}(id=${user.id})}">
+        <input type ="submit" value = "Delete"/>
+    </form>
+
+</table>
+<br>
+<form method="GET" th:action="@{/admin/new}">
+    <input type="submit" value="Add new user"/>
+</form>
+<br>
+<form method="GET" th:action="@{/admin/user}">
+    <input type="submit" value="My profile"/>
+</form>
+<br>
+
+</body>
+</html>
