@@ -4,6 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -12,45 +14,65 @@ public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "name")
-    private String name;
+    private String roleName;
 
     @ManyToMany(mappedBy="roles", fetch = FetchType.LAZY)
-    private Collection<User> users;
+    private List<User> users;
 
     public Role() {
     }
 
     public Role(String name) {
-        this.name = name;
+        this.roleName = name;
     }
 
-    public Collection<User> getUsers() {
-        return users;
-    }
-    public void setUsers(Collection<User> users) {
-        this.users = users;
-    }
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setName(String nane) {
-        this.name = nane;
+    public void setRoleName(String nane) {
+        this.roleName = nane;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     @Override
     public String getAuthority() {
-        return getName();
+        return getRoleName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return id == role.id && Objects.equals(roleName, role.roleName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, roleName);
+    }
+
+    @Override
+    public String toString() {
+        return getRoleName();
     }
 }

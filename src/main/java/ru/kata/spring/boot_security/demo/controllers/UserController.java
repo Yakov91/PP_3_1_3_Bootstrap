@@ -8,25 +8,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 
-
 import java.security.Principal;
-import java.util.List;
 
 @Controller
-@RequestMapping ("/") //("/index")
+@RequestMapping ("/user")
 public class UserController {
 
-    private final UserServiceImpl userServiceImpl;
+    private final UserServiceImpl userService;
     @Autowired
-    public UserController(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+    public UserController(UserServiceImpl userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/user")
-    public String userPage(Model model, Principal principal) {
-        User user = userServiceImpl.findByName(principal.getName());
+    public String getUserById(Model model, Principal principal) {
+        User user = userService.getUserByUsername(principal.getName());
         model.addAttribute("user", user);
-        return "/user";
+        model.addAttribute("roles", user.getRoles());
+        return "user/userPage";
     }
 
 }

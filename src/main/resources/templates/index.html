@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Spring Security Example</title>
 </head>
@@ -9,11 +10,9 @@
 <div th:each="user : ${users}">
     <a th:text="${user.toString()}">user</a>
 </div>
-</from>
-<input type="button" value="Logout"
-       onclick="window.location.href = '/logout'"/>
-
-</from>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">Sign Out</button>
+</form>
 </body>
 </html>
 
