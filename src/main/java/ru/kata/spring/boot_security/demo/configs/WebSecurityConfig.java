@@ -7,9 +7,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 
+import ru.kata.spring.boot_security.demo.entities.User;
 
 @Configuration
 @EnableWebSecurity //уже является @Configuration можно не прописывать
@@ -25,25 +30,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.successUserHandler = successUserHandler;
     }
 
-
     @Override //конфигурируем spring security
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()//защита от csrf угроз
                 .authorizeRequests() //начинает конфигурацию, которая определяет, какие запросы к приложению требуют аутентификации.
-                .antMatchers("/").permitAll()//запросы к корневому URL (/) и URL /index могут быть выполнены без аутентификации
+                .antMatchers("/", "index").permitAll()//запросы к корневому URL (/) и URL /index могут быть выполнены без аутентификации
                 .antMatchers("/login").permitAll()
                 .antMatchers("/user/**").access("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-                .antMatchers("/admin/**").access("hasAnyRole('ROLE_ADMIN')")
-                .anyRequest().authenticated() //все остальные запросы к приложению требуют аутентификации. Если пользователь не аутентифицирован, он будет перенаправлен на страницу входа.
+                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
+                //.anyRequest().authenticated() //все остальные запросы к приложению требуют аутентификации. Если пользователь не аутентифицирован, он будет перенаправлен на страницу входа.
                 .and()
-                .formLogin().successHandler(successUserHandler) //или defaultSuccessUrl("/", true)     //после успешной аутентификации будет использоваться преднастройка для пользователя
+                .formLogin()
+                .successHandler(successUserHandler) //или defaultSuccessUrl("/", true)     //после успешной аутентификации будет использоваться преднастройка для пользователя
                 .permitAll()
                 .and()
                 .logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
-                .permitAll();
+                .and()
+                .csrf().disable();//защита от csrf угроз.permitAll();
     }
 
     @Override
@@ -51,10 +56,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
+
+    HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+        return new HiddenHttpMethodFilter();
+    }
 }
+
+
 
 //    @Bean
 //    public DaoAuthenticationProvider authenticationProvider() {
@@ -64,18 +75,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //
 //        return authenticationProvider;
 //    }
-//    @Bean
-//    HiddenHttpMethodFilter hiddenHttpMethodFilter() {
-//        return new HiddenHttpMethodFilter();
-//    }
-//
 
 
 //    @Override
 //    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.jdbcAuthentication().dataSource(dataSource);
 //    }
-
 
 //@Override
 //    protected void configure(AuthenticationManagerBuilder auth) throws Exception {

@@ -1,12 +1,10 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.RoleServiceImpl;
@@ -15,31 +13,28 @@ import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 
 
 import javax.validation.Valid;
-import java.security.Principal;
-import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private final UserServiceImpl userService;
-    private final RoleServiceImpl roleService;
+    private final UserService userService;
+    private final RoleService roleService;
 
 
     @Autowired
-    public AdminController(UserServiceImpl userService, RoleServiceImpl roleService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
     }
     @GetMapping("/users")
     public String getUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("users", userService.findAll());
         return "admin/users";
     }
 
     @GetMapping("user/{id}")
     public String getUserById(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
+        model.addAttribute("user", userService.findOne(id));
         return "admin/userPage";
     }
 
@@ -52,24 +47,24 @@ public class AdminController {
 
     @PostMapping
     public String createUser(@Valid @ModelAttribute("user") User user,
-                             BindingResult result) {
-        if (result.hasErrors()) {
+                             BindingResult result) { //хранение результатов валидации
+        if (result.hasErrors()) { //проверка ошибок валидации
             return "admin/new";
         }
-        userService.saveUser(user);
+        userService.save(user);
         return "redirect:/admin/users";
     }
 
     @GetMapping("user/{id}/edit")
     public String getUpdateEventPage(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.getUserById(id));
+        model.addAttribute("user", userService.findOne(id));
         model.addAttribute("roles", roleService.getRoles());
         return "redirect:/admin/edit";
     }
 
     @DeleteMapping("/users/{id}")
     public String deleteUser( @PathVariable("id") Long id) {
-        userService.deleteUser(id);
+        userService.delete(id);
         return "redirect:/admin/users";
     }
 
@@ -80,7 +75,7 @@ public class AdminController {
         if (result.hasErrors()) {
             return "/admin/edit";
         }
-        userService.updateUser(id, user);
+        userService.update(id, user);
         return "redirect:/admin/users";
     }
 

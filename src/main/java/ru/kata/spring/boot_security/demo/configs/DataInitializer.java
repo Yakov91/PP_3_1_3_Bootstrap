@@ -1,7 +1,9 @@
 //package ru.kata.spring.boot_security.demo.configs;
 //
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.stereotype.Component;
+//import org.springframework.transaction.annotation.Transactional;
 //import ru.kata.spring.boot_security.demo.entities.Role;
 //import ru.kata.spring.boot_security.demo.entities.User;
 //import ru.kata.spring.boot_security.demo.services.RoleService;
@@ -9,43 +11,29 @@
 //import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 //
 //import javax.annotation.PostConstruct;
-//import java.util.ArrayList;
-//import java.util.List;
+//import java.util.*;
 //
 //@Component
 //public class DataInitializer {
 //    private final UserService userService;
-//    private final RoleService roleService;
-//    private final BCryptPasswordEncoder passwordEncoder;
 //
-//    public DataInitializer(UserService userService,
-//                           RoleService roleService,
-//                           BCryptPasswordEncoder passwordEncoder) {
+//    public DataInitializer(UserService userService) {
 //        this.userService = userService;
-//        this.roleService = roleService;
-//        this.passwordEncoder = passwordEncoder;
 //    }
 //
 //    @PostConstruct
 //    public void init() {
-//        ((UserServiceImpl) userService).setPasswordEncoder(passwordEncoder);
-//        Role adminRole = new Role("ROLE_ADMIN");
+//
+//        Set<Role> adminRoles = new HashSet<>();
 //        Role userRole = new Role("ROLE_USER");
-//        roleService.saveRole(adminRole);
-//        roleService.saveRole(userRole);
+//        Role adminRole = new Role("ROLE_ADMIN");
 //
-//        List<Role> adminRoles = new ArrayList<>();
-//        adminRoles.add(adminRole);
+//        User admin = new User("Ivan", "100", adminRoles);
+//
 //        adminRoles.add(userRole);
+//        adminRoles.add(adminRole);
+//        admin.setRoles(adminRoles);
 //
-//        List<Role> userRoles = new ArrayList<>();
-//        userRoles.add(userRole);
-//
-//        User adminUser = new User("admin","adminof", "admin@mail.com"
-//                , "100", adminRoles);
-//        User user = new User("user","userof", "user@mail.com"
-//                , "100", userRoles);
-//        userService.saveUser(adminUser);
-//        userService.saveUser(user);
+//        userService.save(admin);
 //    }
 //}

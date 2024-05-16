@@ -8,9 +8,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.UserDAO;
 import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.entities.User;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -18,29 +18,27 @@ import java.util.stream.Collectors;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserDAO userDao;
+    private final UserRepository repository;
+
 
     @Autowired
-    public UserDetailsServiceImpl(UserDAO userDao) {
-        this.userDao = userDao;
+    public UserDetailsServiceImpl(UserRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.findByUsername(username);
+        User user = repository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
-        return new org.springframework.security.core.userdetails
-                .User(user.getUsername(), user.getPassword()
-                , mapRolesToAuthorities(user.getRoles()));
+        return user;
+        //return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRoles(user.getRoles()));
     }
 
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(
-            Collection<Role> roles) {
-        return roles.stream().map(r -> new SimpleGrantedAuthority
-                        (r.getRoleName())).collect(Collectors.toList());
-    }
+//    private Collection<? extends GrantedAuthority> mapRoles(Collection<Role> roles) {
+//        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
+//    }
 
 }
