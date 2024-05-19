@@ -10,6 +10,8 @@ import ru.kata.spring.boot_security.demo.entities.User;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
     private PasswordEncoder passwordEncoder;
+    private EntityManager entityManager;
 
 
     @Autowired
@@ -56,10 +59,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        if(repository.findByUsername(username).getAuthorities().isEmpty()) {
-            throw new UsernameNotFoundException("Пользователь с таким именем не найден");
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.name = :name", User.class);
+        query.setParameter("name", username);
+        if (username == null) {
+            throw new UsernameNotFoundException("User not found");
         }
-        return repository.findByUsername(username);
+        User user = query.getSingleResult();
+        user.getRoles().size();
+        return user;
+//        if(repository.findByUsername(username).getAuthorities().isEmpty()) {
+//            throw new UsernameNotFoundException("User not found");
+//        }
+//        return repository.findByUsername(username);
     }
 
     @Override
