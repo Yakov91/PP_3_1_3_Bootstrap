@@ -10,5 +10,5 @@ import ru.kata.spring.boot_security.demo.entities.User;
 public interface UserRepository extends JpaRepository<User, Long> {
                //использование пользовательского запроса  вместо стандартного запроса, генерируемого Spring Data JPA
     @Query("SELECT u FROM User u JOIN FETCH u.roles where u.username = :username")
-    User findByUsername(@Param("username") String username); //
+    User findByUsername(@Param("username") String username); //возвращает пользователя с заданным именем пользователя и его ролями
 }

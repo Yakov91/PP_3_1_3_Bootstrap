@@ -21,7 +21,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
     private PasswordEncoder passwordEncoder;
-    private EntityManager entityManager;
 
 
     @Autowired
@@ -29,28 +28,44 @@ public class UserServiceImpl implements UserService {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
     }
+
     @Override
     @Transactional
-    public void save(User user) {
+    public void saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
     }
+//    @Override
+//    @Transactional
+//    public void save(User user) {
+//        User userForAdd = repository.findByUsername(user.getUsername());
+//        if (userForAdd != null) {  //если Имя = НикНейм
+//            System.out.println("Введите другое имя");
+//        } else {
+//            user.setPassword(passwordEncoder.encode(user.getPassword()));
+//            repository.save(user);
+//        }
+//    }
+
     @Override
+    @Transactional
     public void update(Long id, User updateUser) {
-       updateUser.setId(id);
-       updateUser.setPassword(passwordEncoder.encode(updateUser.getPassword()));
-       repository.save(updateUser);
+        updateUser.setId(id);
+        updateUser.setPassword(passwordEncoder.encode(updateUser.getPassword()));
+        repository.save(updateUser);
     }
-    @Transactional(rollbackFor = Exception.class)
+
     @Override
+    @Transactional//(rollbackFor = Exception.class)
     public void delete(Long id) {
         repository.deleteById(id);
-
     }
+
     @Override
     public List<User> findAll() {
         return repository.findAll();
     }
+
     @Override
     public User findOne(Long id) {
         Optional<User> user = repository.findById(id);
@@ -59,22 +74,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.name = :name", User.class);
-        query.setParameter("name", username);
-        if (username == null) {
+        if(repository.findByUsername(username).getAuthorities().isEmpty()) {
             throw new UsernameNotFoundException("User not found");
         }
-        User user = query.getSingleResult();
-        user.getRoles().size();
-        return user;
-//        if(repository.findByUsername(username).getAuthorities().isEmpty()) {
-//            throw new UsernameNotFoundException("User not found");
-//        }
-//        return repository.findByUsername(username);
-    }
-
-    @Override
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+        return repository.findByUsername(username);
     }
 }
+

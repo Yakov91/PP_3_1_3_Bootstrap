@@ -10,8 +10,20 @@
 <div th:each="user : ${users}">
     <a th:text="${user.toString()}">user</a>
 </div>
+<br><br>
+<input type="button" value="Admin"
+       onclick="window.location.href='/admin/users'">
+Only for admin
+<br><br>
+
+<input type="button" value="User"
+       onclick="window.location.href='/user/userPage'">
+Only for User
+
+<br><br>
 <form th:action="@{/logout}" method="post">
     <button type="submit">Sign Out</button>
+
 </form>
 </body>
 </html>

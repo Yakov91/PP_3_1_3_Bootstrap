@@ -12,15 +12,18 @@
 <label>Username</label> <p th:text="${user.getUsername()}">Name</p>
 <label>Password</label> <p th:text="${user.getPassword()()}">Password</p>
 
+<br><br>
 <a th:href="@{/admin/users/{id}/edit(id=${user.getId()})}">
     <input type="button" value="Update user">
 </a>
 
-<form th:method="DDELETE" th:action="@{/admin/users/{id}(id=${user.getId()})}">
+<br><br>
+<form th:method="DELETE" th:action="@{/admin/users/{id}(id=${user.getId()})}">
     <input type="submit" value="Delete user">
 </form>
 <br/>
 
+<br><br>
 <form th:action="@{/logout}" method="post">
     <button type="submit">Sign Out</button>
 </form>

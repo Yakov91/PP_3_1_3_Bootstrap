@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.RoleServiceImpl;
@@ -13,13 +14,14 @@ import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
     private final UserService userService;
     private final RoleService roleService;
-
 
     @Autowired
     public AdminController(UserService userService, RoleService roleService) {
@@ -46,12 +48,12 @@ public class AdminController {
     }
 
     @PostMapping
-    public String createUser(@Valid @ModelAttribute("user") User user,
+    public String createUser(@ModelAttribute("user") @Valid User user,
                              BindingResult result) { //хранение результатов валидации
         if (result.hasErrors()) { //проверка ошибок валидации
             return "admin/new";
         }
-        userService.save(user);
+        userService.saveUser(user);
         return "redirect:/admin/users";
     }
 
@@ -69,57 +71,13 @@ public class AdminController {
     }
 
     @PatchMapping("user/{id}")
-    public String updateEvent(@Valid @ModelAttribute("user") User user,
+    public String updateEvent(@ModelAttribute("user") @Valid User user,
                               @PathVariable("id") Long id,
                               BindingResult result) {
         if (result.hasErrors()) {
-            return "/admin/edit";
+            return "redirect/admin/edit";
         }
         userService.update(id, user);
         return "redirect:/admin/users";
     }
-
 }
-
-//    @GetMapping
-//    public String showUser(Model model, Principal principal) {
-//        User user = userService.findByUsername(principal.getName());
-//        model.addAttribute("user", user);
-//        return "admin";
-//    }
-//
-//    @GetMapping("/new")
-//    public String saveUser(@ModelAttribute("user") User user,
-//                           @RequestParam("authorities") List<String> values) {
-//        Set<Role> roleSet = roleService.getSetOfRoles(values);
-//        user.setRoles(roleSet);
-//        userService.createUser(user);
-//        return "redirect:/admin/users";
-//    }
-//
-//    @PostMapping("/edit") //Почему User вроде создаётся в браузере но в базе на отображается
-//    public String editUser(@ModelAttribute("user") User user,
-//                           @RequestParam("authorities") List<String> values)  {
-//        Set<Role> roleSet = roleService.getSetOfRoles(values);
-//        user.setRoles(roleSet);
-//        userService.updateUser(user);
-//
-//        return "redirect:/admin/users";
-//    }
-//    @DeleteMapping("/delete")
-//    public String deleteUser(@RequestParam(value = "id", required = true) long id) {
-//        User user = userService.deleteUser(id);
-//        return "redirect:/admin/users";
-//    }
-//    @GetMapping("/edit")
-//    public String editUserForm(@RequestParam(value = "id",
-//                                required = true) long id, Model model) {
-//        User user = userService.getUser(id);
-//        if (null == user) {
-//            return "redirect:/admin/users";
-//        }
-//        model.addAttribute("user", user);
-//        List<Role> roles = roleService.getRolesList();
-//        model.addAttribute("allRoles", roles);
-//        return "edit";
-//    }

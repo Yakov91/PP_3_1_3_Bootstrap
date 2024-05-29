@@ -7,22 +7,26 @@
 <body>
 
 <h1>New user</h1>
-<form th:method="Post" th:action="@{/templates/admin}" th:object="${user}">
+<form  th:action="@{/admin/new}" th:method="post" th:object="${user}">
     <label for="username">Enter username: </label>
-    <input type="text" th:filed="*{username}" id="username"/>
+    <input type="text" th:field="*{username}" id="username"/>
+    <div style="color:red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Name Error</div>
     <br/>
     <label for="password">Enter password: </label>
-    <input type="text" th:filed="*{password}" id="password"/>
+    <input type="text" th:field="*{password}" id="password"/>
+    <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Name Error</div>
+
     <br/>
 
     <label for="roles">Roles: </label>
     <select multiple="multiple" th:field="*{roles}" id="roles">
         <option th:each="role : ${roles}"
                 th:value="${role.getId()}"
-                th:text="${role.getName()}"></option>
+                th:text="${role.getRoleName()}"></option>
     </select>
     <br/>
     <input type="submit" value="Create"/>
+
 </form>
 <br><br>
 <form action="/logout">

@@ -7,24 +7,22 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 
-import ru.kata.spring.boot_security.demo.entities.User;
+import ru.kata.spring.boot_security.demo.services.UserDetailsServiceImpl;
+
 
 @Configuration
 @EnableWebSecurity //уже является @Configuration можно не прописывать
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
     private final SuccessUserHandler successUserHandler;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsService userDetailsService,
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
                              SuccessUserHandler successUserHandler) {
         this.userDetailsService = userDetailsService;
         this.successUserHandler = successUserHandler;
@@ -34,11 +32,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests() //начинает конфигурацию, которая определяет, какие запросы к приложению требуют аутентификации.
+                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
+                .antMatchers("/user/**").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
                 .antMatchers("/", "index").permitAll()//запросы к корневому URL (/) и URL /index могут быть выполнены без аутентификации
                 .antMatchers("/login").permitAll()
-                .antMatchers("/user/**").access("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                //.anyRequest().authenticated() //все остальные запросы к приложению требуют аутентификации. Если пользователь не аутентифицирован, он будет перенаправлен на страницу входа.
+               //.anyRequest().authenticated() //все остальные запросы к приложению требуют аутентификации. Если пользователь не аутентифицирован, он будет перенаправлен на страницу входа.
                 .and()
                 .formLogin()
                 .successHandler(successUserHandler) //или defaultSuccessUrl("/", true)     //после успешной аутентификации будет использоваться преднастройка для пользователя
@@ -48,13 +46,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
                 .and()
-                .csrf().disable();//защита от csrf угроз.permitAll();
+                .csrf().disable();//защита от csrf угроз
     }
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
@@ -64,7 +64,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new HiddenHttpMethodFilter();
     }
 }
-
 
 
 //    @Bean
@@ -82,18 +81,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        auth.jdbcAuthentication().dataSource(dataSource);
 //    }
 
-//@Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailsServ).passwordEncoder(passwordEncoder());
-//    }
-
 //    @Override
 //    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.userDetailsService(userDetailsServ)
 //                .passwordEncoder(passwordEncoder());
 //    }
 
-    // аутентификация inMemory
+// аутентификация inMemory
 //    @Bean
 //    @Override
 //    public UserDetailsService userDetailsService() {
