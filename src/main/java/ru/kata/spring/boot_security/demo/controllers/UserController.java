@@ -27,5 +27,4 @@ public class UserController {
         model.addAttribute("roles", user.getRoles());
         return "user/userPage";
     }
-
 }

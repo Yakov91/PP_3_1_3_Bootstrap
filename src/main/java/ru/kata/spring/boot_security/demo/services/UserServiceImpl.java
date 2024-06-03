@@ -2,7 +2,6 @@ package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.entities.User;
@@ -10,8 +9,6 @@ import ru.kata.spring.boot_security.demo.entities.User;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,12 +26,6 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-//    @Override
-//    @Transactional
-//    public void save(User user) {
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//        repository.save(user);
-//    }
     @Override
     @Transactional
     public void save(User user) {
