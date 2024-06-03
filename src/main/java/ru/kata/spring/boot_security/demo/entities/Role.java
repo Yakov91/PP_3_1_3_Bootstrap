@@ -13,13 +13,13 @@ public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private long id;
 
-    @Column(name = "name", nullable = false, length = 64)
+    @Column(name = "name", nullable = false, length = 64, unique=true)
     @Size(min=2, message = "You must enter two or more characters.")
     private String roleName;
 
-    @ManyToMany(mappedBy="roles", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy="roles", fetch = FetchType.EAGER)
     private Set<User> users;
 
     public Role() {
@@ -33,7 +33,7 @@ public class Role implements GrantedAuthority {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

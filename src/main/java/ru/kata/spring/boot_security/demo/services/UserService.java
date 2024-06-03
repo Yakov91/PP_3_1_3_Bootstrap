@@ -7,10 +7,10 @@ import ru.kata.spring.boot_security.demo.entities.User;
 import java.util.List;
 
 public interface UserService {
-    void saveUser(User user);
-    void update(Long id, User updateUser);
-    void delete(Long id);
+    void save(User user);
+    void update(long id, User updateUser);
+    void delete(long id);
     List<User> findAll();
-    User findOne(Long id);
+    User findOne(long id);
     User findByUsername(String username);
 }

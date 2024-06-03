@@ -29,27 +29,27 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    @Transactional
-    public void saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        repository.save(user);
-    }
 //    @Override
 //    @Transactional
 //    public void save(User user) {
-//        User userForAdd = repository.findByUsername(user.getUsername());
-//        if (userForAdd != null) {  //если Имя = НикНейм
-//            System.out.println("Введите другое имя");
-//        } else {
-//            user.setPassword(passwordEncoder.encode(user.getPassword()));
-//            repository.save(user);
-//        }
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        repository.save(user);
 //    }
+    @Override
+    @Transactional
+    public void save(User user) {
+        User userForAdd = repository.findByUsername(user.getUsername());
+        if (userForAdd != null) {  //если Имя = НикНейм
+            System.out.println("Введите другое имя");
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            repository.save(user);
+        }
+    }
 
     @Override
     @Transactional
-    public void update(Long id, User updateUser) {
+    public void update(long id, User updateUser) {
         updateUser.setId(id);
         updateUser.setPassword(passwordEncoder.encode(updateUser.getPassword()));
         repository.save(updateUser);
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional//(rollbackFor = Exception.class)
-    public void delete(Long id) {
+    public void delete(long id) {
         repository.deleteById(id);
     }
 
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findOne(Long id) {
+    public User findOne(long id) {
         Optional<User> user = repository.findById(id);
         return user.orElse(null);
     }

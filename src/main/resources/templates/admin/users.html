@@ -11,12 +11,14 @@
     <a th:href="@{/admin/users/{id} (id=${user.getId()})}"
        th:text="${user.getUsername()}">user</a>
 
+
 </div>
 <br/>
 <hr/>
 <!--Отображают горизонтальную черту,
 пустую строку и ссылку для создания нового пользователя-->
 <a th:href="@{/admin/new}">Create new user</a>
+<br><br>
 
 <br/>
 <br><br>

@@ -18,7 +18,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private long id;
 
     @Column(name = "username", nullable = false, unique = true, length = 45)
     @Size(min=2, message = "You must enter two or more characters.")
@@ -29,7 +29,7 @@ public class User implements UserDetails {
     @NotEmpty(message = "Username must not be zero")
     private String password;
 
-    @ManyToMany (fetch = FetchType.LAZY)
+    @ManyToMany (fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -48,7 +48,7 @@ public class User implements UserDetails {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

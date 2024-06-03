@@ -30,15 +30,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username);
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
+            throw new UsernameNotFoundException("User '%s' not found");
         }
-        //return user;
-        return new org.springframework.security.core.userdetails
-                .User(user.getUsername(), user.getPassword(), mapRoles(user.getRoles()));
+        return user;
+//        return new org.springframework.security.core.userdetails
+//                .User(user.getUsername(), user.getPassword(), mapRoles(user.getRoles()));
     }
 
-    private Collection<? extends GrantedAuthority> mapRoles(Collection<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
-    }
+//    private Collection<? extends GrantedAuthority> mapRoles(Collection<Role> roles) {
+//        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
+//    }
 
 }
