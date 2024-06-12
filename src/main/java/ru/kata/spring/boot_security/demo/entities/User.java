@@ -4,12 +4,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -25,11 +24,26 @@ public class User implements UserDetails {
     @NotEmpty(message = "Username must not be zero")
     private String username;
 
+    @Column(name = "lastname", nullable = false, unique = true, length = 65)
+    @Size(min=2, message = "You must enter two or more characters.")
+    @NotEmpty(message = "lastName must not be zero")
+    private String lastname;
+
+    @Column(name = "age", nullable = false)
+    @Min(value = 1, message = "The age must be greater than zero")
+    @Max(value = 120, message = "The age cannot be more than 120")
+    private Integer age;
+
+    @Column(name = "email", nullable = false, unique = true, length = 65)
+    @Size(min=2, message = "You must enter two or more characters.")
+    @NotEmpty(message = "email must not be zero")
+    private String email;
+
     @Column(name = "password", nullable = false, length = 225)
     @NotEmpty(message = "Username must not be zero")
     private String password;
 
-    @ManyToMany (fetch = FetchType.EAGER)
+    @ManyToMany (fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -38,8 +52,12 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, String password, Set<Role> roles) {
+    public User(String username, String lastname, int age,
+                String email, String password, Set<Role> roles) {
         this.username = username;
+        this.lastname = lastname;
+        this.age = age;
+        this.email = email;
         this.password = password;
         this.roles = roles;
     }
@@ -61,6 +79,30 @@ public class User implements UserDetails {
         this.username = name;
     }
 
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String getPassword() {
         return password;
@@ -69,8 +111,8 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public List<Role> getRoles() {
+        return new ArrayList<>(this.roles);
     }
 
     public void setRoles(Set<Role> roles) {
@@ -104,9 +146,11 @@ public class User implements UserDetails {
 
     @Override
     public String toString() {
-        return "User {" +
-                " id=" + id +
-                ", name='" + username + '\'' +
+        return "User{" +
+                "username='" + username + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", age=" + age +
+                ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", roles=" + roles +
                 '}';

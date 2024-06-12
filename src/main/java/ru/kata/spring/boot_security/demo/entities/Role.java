@@ -19,7 +19,7 @@ public class Role implements GrantedAuthority {
     @Size(min=2, message = "You must enter two or more characters.")
     private String roleName;
 
-    @ManyToMany(mappedBy="roles", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy="roles", fetch = FetchType.LAZY)
     private Set<User> users;
 
     public Role() {

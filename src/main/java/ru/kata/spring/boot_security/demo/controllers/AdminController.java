@@ -10,6 +10,7 @@ import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import javax.validation.Valid;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/admin")
@@ -23,21 +24,30 @@ public class AdminController {
         this.roleService = roleService;
     }
     @GetMapping("/users")
-    public String getUsers(Model model) {
-        model.addAttribute("users", userService.findAll());
+    public String getUsers(Model model, Principal principal) {
+        User user = userService.getUserByUsername(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("roles", user.getRoles());
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("AllRoles", roleService.getRoles());
         return "admin/users";
     }
 
-    @GetMapping("users/{id}")
-    public String getUserById(@PathVariable("id") long id, Model model) {
-        model.addAttribute("user", userService.findOne(id));
-        return "admin/userPage";
+    @GetMapping("/userPage")
+    public String getUserById(Model model, Principal principal) {
+        User user = userService.getUserByUsername(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("roles", user.getRoles());
+             return "admin/userPage";
     }
 
     @GetMapping("/new")
-    public String newUser(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("roles", roleService.getRoles());
+    public String newUser(Model model, Principal principal) {
+        User user = userService.getUserByUsername(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("roles", user.getRoles());
+        model.addAttribute("newUser", new User());
+        model.addAttribute("AllUsers", roleService.getRoles());
         return "admin/new";
     }
 
@@ -47,20 +57,13 @@ public class AdminController {
         if (result.hasErrors()) {
             return "admin/new";
         }
-        userService.save(user);
+        userService.saveUser(user);
         return "redirect:admin/users";
     }
 
-    @GetMapping("user/{id}/edit")
-    public String getUpdateEventPage(Model model, @PathVariable("id") long id) {
-        model.addAttribute("user", userService.findOne(id));
-        model.addAttribute("roles", roleService.getRoles());
-        return "/admin/edit";
-    }
-
-    @DeleteMapping("users/{id}")
+    @DeleteMapping("/users/delete/{id}")
     public String deleteUser( @PathVariable("id") long id) {
-        userService.delete(id);
+        userService.deleteUser(id);
         return "redirect:/admin/users";
     }
 
@@ -71,7 +74,7 @@ public class AdminController {
         if (result.hasErrors()) {
             return "/admin/edit";
         }
-        userService.update(id, user);
+        userService.updateUser(id, user);
         return "redirect:/admin/users";
     }
 }
