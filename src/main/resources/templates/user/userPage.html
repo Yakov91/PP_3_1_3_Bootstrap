@@ -1,31 +1,67 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head>
     <meta charset="UTF-8">
-    <title>User</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+          crossorigin="anonymous">
 </head>
+
 <body>
+<header>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+             <b> <span th:text="${user.getUsername()}"> </span> </b>
+                 <span>with roles:</span>
+            <span th:text="${user.getRoles()}"></span>
+        </span>
+            <form th:action="@{/logout}" th:method="post">
+                <button type="submit" class="btn btn-dark">Logout</button>
+            </form>
+        </div>
+    </nav>
+</header>
 
-<h3>Page user</h3>
-<label>Id</label> <p th:text="${user.getId()}">Id</p>
-<label>Username</label> <p th:text="${user.getUsername()}">Name</p>
-<label>Password</label> <p th:text="${user.getPassword()}">Password</p>
-
-<div>
-    <label>Роли:
-        <input type="checkbox" name="roles"
-               th:each="role: ${roles}"
-               th:text="${role.getRoleName()}"
-               th:value="${role.getId()}"
-               th:field="*{roles}"/>
-    </label>
+<div class="container-fluid mt-3 p-0">
+    <div class="row">
+        <div class="col-2">
+            <span class="d-block p-0 mx-0 bg-primary text-white text-center" style="width: 115px;">User</span>
+        </div>
+        <div class="col-9 p-0 mx-2">
+            <h4>User information-page</h4>
+            <h6 class="border p-2 mb-0 bg-light rounded">About user</h6>
+            <table class="table table-striped border">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td th:text="${user.getId()}"></td>
+                    <td th:text="${user.getUsername()}"></td>
+                    <td th:text="${user.getLastname()}"></td>
+                    <td th:text="${user.getAge()}"></td>
+                    <td th:text="${user.getEmail()}"></td>
+                    <td th:text="${user.getRoles()}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-<br/>
 
-<form th:action="@{/logout}" method="post">
-    <button type="submit">Sign Out</button>
-</form>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous">
+</script>
 </body>
 </html>

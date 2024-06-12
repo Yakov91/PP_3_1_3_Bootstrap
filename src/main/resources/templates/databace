@@ -1,0 +1,37 @@
+create table users
+(
+    id       bigint auto_increment
+        primary key,
+    username varchar(65)  null,
+    password varchar(255) null,
+    email    varchar(255) null,
+    lastname varchar(45)  null,
+    age      int          null
+);
+
+-- auto-generated definition --
+create table user_roles
+(
+    user_id bigint not null,
+    role_id bigint not null,
+    primary key (user_id, role_id),
+    constraint user_roles_ibfk_1
+        foreign key (user_id) references users (id),
+    constraint user_roles_ibfk_2
+        foreign key (role_id) references roles (id)
+);
+
+
+create table roles
+(
+    id   bigint auto_increment
+        primary key,
+    name varchar(65) null
+);
+
+insert into roles (name) values ('ROLE_ADMIN'), ('ROLE_USER');
+
+insert into users (username, lastname, age, password, email) values
+(admin, adminov, 22, '$2a$12$pgQorpiB0xDlLSYCz6DTZueKP5.EYiRQIAoWZ42MYiya6IaHIItVG', admin@mail.com);
+
+insert into users_roles (user_id, role_id) values (1, 1);

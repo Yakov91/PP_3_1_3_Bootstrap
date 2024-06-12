@@ -1,74 +1,89 @@
 package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.kata.spring.boot_security.demo.dao.UserDAO;
+import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.entities.User;
 
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
-
-    private final UserRepository repository;
+    private final UserDAO userDAO;
+    private final RoleService roleService;
     private PasswordEncoder passwordEncoder;
 
-
     @Autowired
-    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
-        this.repository = repository;
+    public UserServiceImpl(UserDAO userDAO, RoleService roleService, PasswordEncoder passwordEncoder) {
+        this.userDAO = userDAO;
+        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    @Transactional
-    public void save(User user) {
-        User userForAdd = repository.findByUsername(user.getUsername());
-        if (userForAdd != null) {  //если Имя = НикНейм
-            System.out.println("Введите другое имя");
-        } else {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            repository.save(user);
-        }
+    public List<User> getAllUsers() {
+        return userDAO.findAll();
     }
 
     @Override
     @Transactional
-    public void update(long id, User updateUser) {
-        updateUser.setId(id);
-        updateUser.setPassword(passwordEncoder.encode(updateUser.getPassword()));
-        repository.save(updateUser);
+    public void saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDAO.save(settingRoles(user));
     }
 
     @Override
-    @Transactional//(rollbackFor = Exception.class)
-    public void delete(long id) {
-        repository.deleteById(id);
+    public User getUserById(long id) {
+        return userDAO.findById(id);
     }
 
     @Override
-    public List<User> findAll() {
-        return repository.findAll();
-    }
-
-    @Override
-    public User findOne(long id) {
-        Optional<User> user = repository.findById(id);
-        return user.orElse(null);
-    }
-
-    @Override
-    public User findByUsername(String username) {
-        if(repository.findByUsername(username).getAuthorities().isEmpty()) {
-            throw new UsernameNotFoundException("User not found");
+    @Transactional
+    public void updateUser(long id, User updateUser) {
+        User user = userDAO.findById(id);
+        user.setUsername(updateUser.getUsername());
+        user.setLastname(updateUser.getLastname());
+        user.setAge(updateUser.getAge());
+        user.setEmail(updateUser.getEmail());
+        user.setRoles(updateUser.getRoles());
+        if (!user.getPassword().equals(updateUser.getPassword())) {
+            user.setPassword(passwordEncoder.encode(updateUser.getPassword()));
         }
-        return repository.findByUsername(username);
+        userDAO.save(settingRoles(user));
+    }
+
+    @Override
+    @Transactional //(rollbackFor = Exception.class)
+    public void deleteUser(long id) {
+        userDAO.deleteById(id);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        return userDAO.findByUsername(username);
+    }
+
+    private User settingRoles(User user) {
+        if (user.getRoles() == null) {
+            user.setRoles(new ArrayList<>());
+        }
+        List<Role> roles = user.getRoles();
+        Collection<Role> roleList = roleService.getRoles();
+        List<Role> list = new ArrayList<>();
+        for (Role role : roleList) {
+            for (Role userRole : roles) {
+                if (role.getRoleName().equals(userRole.getRoleName())) {
+                    list.add(role);
+                }
+            }
+        }
+        user.setRoles(list);
+        return user;
     }
 }
 
