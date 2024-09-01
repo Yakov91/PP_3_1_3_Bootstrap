@@ -4,7 +4,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,12 +15,12 @@ public class Role implements GrantedAuthority {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name", nullable = false, length = 64, unique=true)
     @Size(min=2, message = "You must enter two or more characters.")
     private String roleName;
 
-    @ManyToMany(mappedBy="roles", fetch = FetchType.LAZY)
-    private List<User> users;
+    @ManyToMany(mappedBy="roles", fetch = FetchType.EAGER)
+    private Set<User> users;
 
     public Role() {
     }
@@ -46,11 +45,11 @@ public class Role implements GrantedAuthority {
         this.roleName = nane;
     }
 
-    public List<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 
