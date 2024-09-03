@@ -14,6 +14,8 @@ import java.util.*;
 @Service
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
+
+    int x = 1;
     private final UserDAO userDAO;
     private final RoleService roleService;
     private PasswordEncoder passwordEncoder;
