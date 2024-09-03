@@ -33,11 +33,11 @@
             <div class="btn-group-vertical"> <!--вертикальное расположение кнопок-->
                 <a class="btn btn-primary btn-sm p-0 mx-0 text-center"
                    aria-pressed="true"
-                   data-bs-toggle="button"
+                   data-toggle="button"
                    href="/admin/users" role="button" style="width: 115px;">Admin</a>
                 <a class="btn btn-sm p-0 mx-0 text-center text-primary"
                    aria-pressed="true"
-                   data-bs-toggle="button"
+                   data-toggle="button"
                    href="/admin/userPage" role="button" style="width: 115px;">User</a>
             </div>
         </div>
@@ -178,17 +178,6 @@
                                                            th:text="${role.getRoleName().replace('ROLE_', '') +''}">
                                                 </div>
                                             </fieldset>
-
-<!--                                            <div>-->
-<!--                                                <label class="col-form-label fw-bold"><h6>Roles:</h6>-->
-<!--                                                    <input type="checkbox" name="roles"-->
-<!--                                                           th:each="role : ${AllRoles}"-->
-<!--                                                           th:text="${role.getRoleName().replace('ROLE_', '') + ' '}"-->
-<!--                                                           th:value="${role.getRoleName()}"-->
-<!--                                                           th:field="*{roles}"-->
-<!--                                                    />-->
-<!--                                                </label>-->
-<!--                                            </div>-->
 
                                             <div class="modal-footer text-end">
                                                 <button type="button" class="btn btn-secondary"
