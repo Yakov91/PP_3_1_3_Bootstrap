@@ -10,8 +10,10 @@ import java.util.Set;
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
-    @Id
 
+    private int x;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
